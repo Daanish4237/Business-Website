@@ -1743,10 +1743,7 @@
               <li><span class="sk">Storage</span><span class="sv">1TB NVMe SSD</span></li>
               <li><span class="sk">PSU</span><span class="sv">650W 80+ Gold</span></li>
             </ul>
-            <button class="build-btn"><span>Configure This Build →</span></button>
-          </div>
-
-          <!-- INFERNO (featured) -->
+            <button class="build-btn" data-build="Ember Build — Tier 01 (RM 3,299 starting)"><span>Configure This Build →</span></button>
           <div class="build-card featured">
             <div class="scan-line"></div>
             <div class="tier-badge">// Most Popular</div>
@@ -1761,7 +1758,7 @@
               <li><span class="sk">Storage</span><span class="sv">2TB NVMe Gen4</span></li>
               <li><span class="sk">PSU</span><span class="sv">850W 80+ Gold</span></li>
             </ul>
-            <button class="build-btn"><span>Configure This Build →</span></button>
+            <button class="build-btn" data-build="Inferno Build — Most Popular (RM 5,799 starting)"><span>Configure This Build →</span></button>
           </div>
 
           <!-- HELLFIRE -->
@@ -1779,14 +1776,7 @@
               <li><span class="sk">Storage</span><span class="sv">4TB NVMe Gen4</span></li>
               <li><span class="sk">PSU</span><span class="sv">1200W 80+ Platinum</span></li>
             </ul>
-            <button class="build-btn"><span>Configure This Build →</span></button>
-          </div>
-
-        </div>
-      </div>
-    </div>
-  </section>
-  <div class="forge-div"></div>
+            <button class="build-btn" data-build="Hellfire Build — Tier 03 Flagship (RM 9,499 starting)"><span>Configure This Build →</span></button>
 
   <!-- PC SHOWCASE -->
   <!--
@@ -2310,8 +2300,34 @@
   </script>
 
   <script>
-    /* ─── MOBILE NAV ─────────────────────────────────────────────────── */
-    const navToggle  = document.getElementById('nav-toggle');
+    /* ─── CONFIGURE BUILD BUTTONS ───────────────────────────────────── */
+    document.querySelectorAll('.build-btn[data-build]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const buildName = btn.getAttribute('data-build');
+
+        // pre-select "Pre-configured Build" in the service dropdown
+        const serviceSelect = document.querySelectorAll('.contact-form select')[1];
+        if (serviceSelect) {
+          for (let i = 0; i < serviceSelect.options.length; i++) {
+            if (serviceSelect.options[i].text === 'Pre-configured Build') {
+              serviceSelect.selectedIndex = i;
+              break;
+            }
+          }
+        }
+
+        // pre-fill the textarea with the build name
+        const textarea = document.querySelector('.contact-form textarea');
+        if (textarea && !textarea.value) {
+          textarea.value = 'I am interested in the ' + buildName + '. Please send me more details.';
+        }
+
+        // scroll to contact section
+        document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    /* ─── MOBILE NAV ─────────────────────────────────────────────────── */    const navToggle  = document.getElementById('nav-toggle');
     const mobileNav  = document.getElementById('mobile-nav');
 
     navToggle.addEventListener('click', () => {
