@@ -921,6 +921,14 @@
       filter:     brightness(0.85);
     }
 
+    /* allow specific images to fit inside the frame without cropping */
+    .showcase-img-wrap img.fit-contain {
+      object-fit: contain;
+      object-position: center;
+      background: var(--surface2);
+      filter: brightness(0.95);
+    }
+
     .showcase-card:hover .showcase-img-wrap img {
       transform: scale(1.06);
       filter:    brightness(1);
@@ -1595,7 +1603,7 @@
               <li><span class="sk">Storage</span><span class="sv">1TB NVMe SSD</span></li>
               <li><span class="sk">PSU</span><span class="sv">650W 80+ Gold</span></li>
             </ul>
-            <button class="build-btn"><span>Configure This Build →</span></button>
+            <button class="build-btn" onclick="configureBuild('EMBER','CPU: Ryzen 5 7600 | GPU: RTX 4060 | RAM: 16GB DDR5 5200 | Storage: 1TB NVMe SSD | PSU: 650W 80+ Gold')"><span>Configure This Build →</span></button>
           </div>
 
           <!-- INFERNO (featured) -->
@@ -1613,7 +1621,7 @@
               <li><span class="sk">Storage</span><span class="sv">2TB NVMe Gen4</span></li>
               <li><span class="sk">PSU</span><span class="sv">850W 80+ Gold</span></li>
             </ul>
-            <button class="build-btn"><span>Configure This Build →</span></button>
+            <button class="build-btn" onclick="configureBuild('INFERNO','CPU: Ryzen 7 7700X | GPU: RTX 4070 Ti | RAM: 32GB DDR5 6000 | Storage: 2TB NVMe Gen4 | PSU: 850W 80+ Gold')"><span>Configure This Build →</span></button>
           </div>
 
           <!-- HELLFIRE -->
@@ -1631,7 +1639,7 @@
               <li><span class="sk">Storage</span><span class="sv">4TB NVMe Gen4</span></li>
               <li><span class="sk">PSU</span><span class="sv">1200W 80+ Platinum</span></li>
             </ul>
-            <button class="build-btn"><span>Configure This Build →</span></button>
+            <button class="build-btn" onclick="configureBuild('HELLFIRE','CPU: Core i9-14900K | GPU: RTX 4090 | RAM: 64GB DDR5 6400 | Storage: 4TB NVMe Gen4 | PSU: 1200W 80+ Platinum')"><span>Configure This Build →</span></button>
           </div>
 
         </div>
@@ -1669,7 +1677,7 @@
 
         <div class="showcase-card">
           <div class="showcase-img-wrap">
-            <img src="PC build 2.png" alt="Blue Inferno Build #002 — RTX 5070 Ti · R9 7900X" />
+            <img class="fit-contain" src="PC build 2.png" alt="Blue Inferno Build #002 — RTX 5070 Ti · R9 7900X" />
           </div>
           <div class="showcase-info">
             <div class="showcase-build-name">BLUE INFERNO BUILD #002</div>
@@ -2199,6 +2207,29 @@
       const waURL = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(text);
       window.open(waURL, '_blank');
     });
+
+      // prefill contact form and scroll to contact section for a selected pre-configured build
+      function configureBuild(buildName, specs) {
+        const contact = document.getElementById('contact');
+        if (contact) contact.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        const form = document.querySelector('.contact-form');
+        if (!form) return;
+
+        // set 'Interested In' to Pre-configured Build if available
+        const selects = form.querySelectorAll('select');
+        if (selects[1]) {
+          for (let i = 0; i < selects[1].options.length; i++) {
+            if (selects[1].options[i].text === 'Pre-configured Build') { selects[1].selectedIndex = i; break; }
+          }
+        }
+
+        const textarea = form.querySelector('textarea');
+        if (textarea) {
+          textarea.value = `I'd like to enquire about the ${buildName} build.\n\nSpecs:\n${specs}\n\nPlease confirm availability, lead time and a final price.`;
+          textarea.focus();
+        }
+      }
   </script>
 
   <!-- ─── LIGHTBOX ───────────────────────────────────────────────────── -->
