@@ -697,7 +697,7 @@
 
     .builds-grid {
       display:               grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap:                   2px;
     }
 
@@ -907,7 +907,7 @@
     .showcase-img-wrap {
       position:   relative;
       width:      100%;
-      padding-top: 125%;
+      padding-top: 66%;
       overflow:   hidden;
       background: var(--surface2);
     }
@@ -1518,6 +1518,7 @@
 
       /* showcase */
       .showcase-grid    { grid-template-columns: 1fr; }
+
       /* services */
       .svc-grid         { grid-template-columns: 1fr; }
 
@@ -1634,15 +1635,6 @@
     </button>
     <button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
   </nav>
-
-  <!-- MOBILE NAV -->
-  <div id="mobile-nav" role="navigation">
-    <a href="#builds"   onclick="closeMobileNav()">Builds</a>
-    <a href="#showcase" onclick="closeMobileNav()">Showcase</a>
-    <a href="#services" onclick="closeMobileNav()">Services</a>
-    <a href="#why"      onclick="closeMobileNav()">Why Us</a>
-    <a href="#contact"  onclick="closeMobileNav()">Contact</a>
-  </div>
 
   <!-- HERO -->
   <section class="hero">
