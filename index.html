@@ -697,7 +697,7 @@
 
     .builds-grid {
       display:               grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap:                   2px;
     }
 
@@ -887,7 +887,7 @@
 
     .showcase-grid {
       display:               grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap:                   1.5rem;
     }
 
@@ -1496,6 +1496,8 @@
       .why-visual      { display: none; }
       .contact-layout  { grid-template-columns: 1fr; }
       .nav-links       { display: none; }
+      .builds-grid     { grid-template-columns: repeat(2, 1fr); }
+      .showcase-grid   { grid-template-columns: repeat(2, 1fr); }
     }
 
     /* Mobile — up to 640px */
