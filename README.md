@@ -2,7 +2,7 @@
 
 Official website for **DragonForge PCs**, a custom PC building business based in Kuala Lumpur, Malaysia.
 
-**Live site:** [dragonforge-pcs.vercel.app](https://dragonforge-pcs.vercel.app) *(update with your actual URL)*
+**Live site:** [dragonforge-pcs.vercel.app](https://dragonforgepcs.vercel.app/) 
 
 ---
 
