@@ -2218,14 +2218,14 @@
 
       // build the pre-filled WhatsApp message
       const text = [
-        '🔥 *New DragonForge Inquiry*',
+        'New DragonForge Inquiry',
         '',
-        `👤 *Name:* ${name}`,
-        `📧 *Email:* ${email}`,
-        phone   ? `📱 *Phone:* ${phone}`     : null,
-        `💰 *Budget:* ${budget}`,
-        `🖥️ *Interested in:* ${service}`,
-        message ? `📝 *Details:*\n${message}` : null,
+        `Name: ${name}`,
+        `Email: ${email}`,
+        phone   ? `Phone: ${phone}`       : null,
+        `Budget: ${budget}`,
+        `Interested in: ${service}`,
+        message ? `Details:\n${message}`  : null,
       ].filter(Boolean).join('\n');
 
       // your WhatsApp number in international format (no + or spaces)
