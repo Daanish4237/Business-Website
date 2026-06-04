@@ -269,6 +269,62 @@
     .nav-cta:hover::before { transform: translateX(0); }
     .nav-cta:hover         { color: #fff; }
 
+    /* Mobile navbar: hamburger toggle and panel */
+    .nav-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border: 1px solid rgba(204,0,0,0.15);
+      background: transparent;
+      color: var(--red-bright);
+      cursor: pointer;
+      font-size: 20px;
+    }
+
+    .mobile-menu {
+      position: fixed;
+      top: 68px;
+      left: 0;
+      right: 0;
+      background: var(--bg);
+      z-index: 600;
+      padding: 1rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      border-bottom: 1px solid rgba(204,0,0,0.08);
+      transform-origin: top;
+      transform: translateY(-8px) scaleY(0.98);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .2s, transform .18s, visibility .2s;
+    }
+
+    .mobile-menu.open {
+      transform: translateY(0) scaleY(1);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .mobile-menu a, .mobile-menu button {
+      text-align: left;
+      padding: 12px 10px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 1rem; height: 64px; }
+      .nav-links { display: none; }
+      .nav-cta { display: none; }
+      .nav-toggle { display: flex; }
+    }
+
     /* ─── HERO ──────────────────────────────────────────────────────── */
     .hero {
       position:        relative;
@@ -1505,6 +1561,7 @@
       <span class="nl-forge">Forge</span>
       <span class="nl-pcs">PCs</span>
     </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Open navigation">☰</button>
     <div class="nav-links">
       <a href="#builds">Builds</a>
       <a href="#showcase">Showcase</a>
@@ -1515,6 +1572,14 @@
     <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
       Get a Quote
     </button>
+    <div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+      <a href="#builds">Builds</a>
+      <a href="#showcase">Showcase</a>
+      <a href="#services">Services</a>
+      <a href="#why">Why Us</a>
+      <a href="#contact">Contact</a>
+      <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Get a Quote</button>
+    </div>
   </nav>
 
   <!-- HERO -->
@@ -2019,6 +2084,38 @@
   </footer>
 
   <script>
+    // Mobile nav toggle
+    (function () {
+      const navToggle = document.getElementById('navToggle');
+      const mobileMenu = document.getElementById('mobileMenu');
+      if (!navToggle || !mobileMenu) return;
+
+      function openMenu() {
+        mobileMenu.classList.add('open');
+        mobileMenu.setAttribute('aria-hidden', 'false');
+        navToggle.setAttribute('aria-expanded', 'true');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeMenu() {
+        mobileMenu.classList.remove('open');
+        mobileMenu.setAttribute('aria-hidden', 'true');
+        navToggle.setAttribute('aria-expanded', 'false');
+        document.body.style.overflow = '';
+      }
+
+      navToggle.addEventListener('click', e => {
+        e.stopPropagation();
+        mobileMenu.classList.contains('open') ? closeMenu() : openMenu();
+      });
+
+      // Close when clicking a link
+      mobileMenu.querySelectorAll('a, button').forEach(el => el.addEventListener('click', () => closeMenu()));
+
+      // Close on scroll or resize
+      window.addEventListener('scroll', () => { if (mobileMenu.classList.contains('open')) closeMenu(); });
+      window.addEventListener('resize', () => { if (window.innerWidth > 768) closeMenu(); });
+    })();
     // ── LOADER ──────────────────────────────────────────────────────────
     window.addEventListener('load', () => {
       setTimeout(() => {
