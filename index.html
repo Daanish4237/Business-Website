@@ -2018,7 +2018,7 @@
             <label>Tell Us More</label>
             <textarea placeholder="What games do you play? Any components in mind? The more detail, the better..."></textarea>
           </div>
-          <button class="submit-btn">Send My Request →</button>
+          <button class="submit-btn" id="waSubmitBtn">Send My Request →</button>
         </div>
 
       </div>
@@ -2194,6 +2194,46 @@
     }, { threshold: .5 });
 
     countObs.observe(countEl);
+  </script>
+
+  <script>
+    /* ─── WHATSAPP FORM SUBMIT ───────────────────────────────────────── */
+    document.getElementById('waSubmitBtn').addEventListener('click', function () {
+      const form   = this.closest('.contact-form');
+      const inputs = form.querySelectorAll('input, select, textarea');
+
+      // grab values
+      const name    = form.querySelector('input[type="text"]').value.trim();
+      const email   = form.querySelector('input[type="email"]').value.trim();
+      const phone   = form.querySelectorAll('input[type="text"]')[1]?.value.trim() || '';
+      const budget  = form.querySelectorAll('select')[0].value;
+      const service = form.querySelectorAll('select')[1].value;
+      const message = form.querySelector('textarea').value.trim();
+
+      // basic validation
+      if (!name || !email) {
+        alert('Please fill in at least your name and email before sending.');
+        return;
+      }
+
+      // build the pre-filled WhatsApp message
+      const text = [
+        '🔥 *New DragonForge Inquiry*',
+        '',
+        `👤 *Name:* ${name}`,
+        `📧 *Email:* ${email}`,
+        phone   ? `📱 *Phone:* ${phone}`     : null,
+        `💰 *Budget:* ${budget}`,
+        `🖥️ *Interested in:* ${service}`,
+        message ? `📝 *Details:*\n${message}` : null,
+      ].filter(Boolean).join('\n');
+
+      // your WhatsApp number in international format (no + or spaces)
+      const waNumber = '60132493268';
+
+      const waURL = 'https://wa.me/' + waNumber + '?text=' + encodeURIComponent(text);
+      window.open(waURL, '_blank');
+    });
   </script>
 
   <!-- ─── LIGHTBOX ───────────────────────────────────────────────────── -->
