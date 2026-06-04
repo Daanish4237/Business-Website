@@ -1,0 +1,2084 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DragonForge PCs — Built to Perform. Engineered to Excel.</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* ─── RESET & VARIABLES ─────────────────────────────────────────── */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg:           #060404;
+      --bg2:          #0a0606;
+      --surface:      #100808;
+      --surface2:     #160a0a;
+      --red:          #CC0000;
+      --red-bright:   #FF1A1A;
+      --red-deep:     #990000;
+      --steel-light:  #C4CDD6;
+      --text:         #EDE8E8;
+      --muted:        #A89898;   /* was #6E5F5F — improved contrast */
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background:   var(--bg);
+      color:        var(--text);
+      font-family:  'Rajdhani', sans-serif;
+      font-size:    17px;
+      font-weight:  500;
+      line-height:  1.7;
+      overflow-x:   hidden;
+      cursor:       none;
+    }
+
+    /* ─── CUSTOM CURSOR ─────────────────────────────────────────────── */
+    #cursor {
+      position:      fixed;
+      width:         10px;
+      height:        10px;
+      background:    var(--red-bright);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index:       9999;
+      transform:     translate(-50%, -50%);
+      mix-blend-mode: screen;
+      transition:    width .2s, height .2s;
+    }
+
+    #cursor-ring {
+      position:      fixed;
+      width:         34px;
+      height:        34px;
+      border:        1px solid rgba(204, 0, 0, 0.6);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index:       9998;
+      transform:     translate(-50%, -50%);
+      mix-blend-mode: screen;
+      transition:    width .3s, height .3s;
+    }
+
+    /* ─── PARTICLES CANVAS ──────────────────────────────────────────── */
+    #particles {
+      position:       fixed;
+      inset:          0;
+      z-index:        0;
+      pointer-events: none;
+    }
+
+    /* ─── LOADER ────────────────────────────────────────────────────── */
+    #loader {
+      position:        fixed;
+      inset:           0;
+      background:      var(--bg);
+      z-index:         9000;
+      display:         flex;
+      align-items:     center;
+      justify-content: center;
+      flex-direction:  column;
+      gap:             1.5rem;
+      transition:      opacity .6s, visibility .6s;
+    }
+
+    #loader.hidden {
+      opacity:        0;
+      visibility:     hidden;
+      pointer-events: none;
+    }
+
+    .ld-logo { display: flex; align-items: baseline; }
+
+    .ld-dragon {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      30px;
+      letter-spacing: 4px;
+      color:          var(--steel-light);
+    }
+
+    .ld-forge {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      30px;
+      letter-spacing: 4px;
+      background:     linear-gradient(180deg, #FF2222, #AA0000);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .ld-pcs {
+      font-family:    'Orbitron', monospace;
+      font-size:      11px;
+      font-weight:    700;
+      letter-spacing: 4px;
+      color:          var(--red-bright);
+      margin-left:    8px;
+      align-self:     center;
+    }
+
+    .ld-bar {
+      width:      240px;
+      height:     2px;
+      background: rgba(204, 0, 0, 0.12);
+      overflow:   hidden;
+    }
+
+    .ld-fill {
+      height:     100%;
+      width:      0;
+      background: linear-gradient(90deg, var(--red-deep), var(--red), var(--red-bright));
+      animation:  ldFill 2s ease forwards;
+    }
+
+    @keyframes ldFill { to { width: 100%; } }
+
+    .ld-text {
+      font-family:    'Orbitron', monospace;
+      font-size:      10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color:          var(--muted);
+    }
+
+    .ld-tagline {
+      font-size:      12px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color:          rgba(204, 0, 0, 0.5);
+    }
+
+    /* ─── NAV ───────────────────────────────────────────────────────── */
+    nav {
+      position:        fixed;
+      top:             0;
+      left:            0;
+      right:           0;
+      z-index:         500;
+      height:          68px;
+      display:         flex;
+      align-items:     center;
+      justify-content: space-between;
+      padding:         0 2.5rem;
+      transition:      background .3s, border .3s;
+    }
+
+    nav.scrolled {
+      background:      rgba(6, 4, 4, 0.97);
+      backdrop-filter: blur(16px);
+      border-bottom:   1px solid rgba(204, 0, 0, 0.15);
+    }
+
+    .nav-logo { display: flex; align-items: baseline; }
+
+    .nl-dragon {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      22px;
+      letter-spacing: 3px;
+      color:          var(--steel-light);
+    }
+
+    .nl-forge {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      22px;
+      letter-spacing: 3px;
+      background:     linear-gradient(180deg, #FF2222, #AA0000);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nl-pcs {
+      font-family:    'Orbitron', monospace;
+      font-size:      10px;
+      font-weight:    700;
+      letter-spacing: 4px;
+      color:          var(--red-bright);
+      margin-left:    7px;
+      align-self:     center;
+    }
+
+    .nav-links {
+      display: flex;
+      gap:     2.5rem;
+    }
+
+    .nav-links a {
+      color:          var(--muted);
+      text-decoration: none;
+      font-size:      13px;
+      font-weight:    600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      position:       relative;
+      transition:     color .2s;
+    }
+
+    .nav-links a::after {
+      content:    '';
+      position:   absolute;
+      bottom:     -4px;
+      left:       0;
+      width:      0;
+      height:     1px;
+      background: var(--red);
+      transition: width .3s;
+    }
+
+    .nav-links a:hover              { color: var(--red-bright); }
+    .nav-links a:hover::after       { width: 100%; }
+
+    .nav-cta {
+      font-family:    'Orbitron', monospace;
+      font-size:      10px;
+      font-weight:    700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding:        9px 22px;
+      background:     transparent;
+      border:         1px solid var(--red);
+      color:          var(--red);
+      cursor:         pointer;
+      position:       relative;
+      overflow:       hidden;
+      transition:     color .3s;
+    }
+
+    .nav-cta::before {
+      content:    '';
+      position:   absolute;
+      inset:      0;
+      background: linear-gradient(90deg, var(--red-deep), var(--red));
+      transform:  translateX(-100%);
+      transition: transform .3s;
+      z-index:    -1;
+    }
+
+    .nav-cta:hover::before { transform: translateX(0); }
+    .nav-cta:hover         { color: #fff; }
+
+    /* ─── HERO ──────────────────────────────────────────────────────── */
+    .hero {
+      position:        relative;
+      min-height:      100vh;
+      display:         flex;
+      align-items:     center;
+      justify-content: center;
+      text-align:      center;
+      overflow:        hidden;
+      padding:         6rem 2rem 4rem;
+    }
+
+    .hero-bg        { position: absolute; inset: 0; z-index: 1; }
+
+    .forge-texture {
+      position:   absolute;
+      inset:      0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(180,0,0,0.07) 0%, transparent 60%),
+                  radial-gradient(ellipse 40% 40% at 15% 85%, rgba(120,0,0,0.10) 0%, transparent 50%),
+                  radial-gradient(ellipse 30% 30% at 85% 15%, rgba(160,0,0,0.06) 0%, transparent 50%);
+    }
+
+    .scale-grid {
+      position:         absolute;
+      inset:            0;
+      background-image: linear-gradient(rgba(180,0,0,0.04) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(180,0,0,0.04) 1px, transparent 1px);
+      background-size:  40px 40px;
+      animation:        gridDrift 40s linear infinite;
+    }
+
+    @keyframes gridDrift {
+      from { background-position: 0 0; }
+      to   { background-position: 40px 40px; }
+    }
+
+    .scanline {
+      position:   absolute;
+      inset:      0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent, transparent 3px,
+        rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px
+      );
+      pointer-events: none;
+    }
+
+    /* embers */
+    .embers { position: absolute; inset: 0; overflow: hidden; }
+
+    .ember {
+      position:         absolute;
+      bottom:           -10px;
+      border-radius:    50%;
+      background:       var(--red-bright);
+      animation:        emberRise linear infinite;
+    }
+
+    @keyframes emberRise {
+      0%   { transform: translateY(0) scale(1); opacity: .9; }
+      100% { transform: translateY(-100vh) translateX(var(--drift)) scale(0); opacity: 0; }
+    }
+
+    /* corner decorations */
+    .corner { position: absolute; width: 50px; height: 50px; z-index: 2; }
+    .corner-tl { top: 24px; left: 24px;  border-top: 2px solid var(--red); border-left:  2px solid var(--red); }
+    .corner-tr { top: 24px; right: 24px; border-top: 2px solid var(--red); border-right: 2px solid var(--red); }
+    .corner-bl { bottom: 24px; left: 24px;  border-bottom: 2px solid var(--red); border-left:  2px solid var(--red); }
+    .corner-br { bottom: 24px; right: 24px; border-bottom: 2px solid var(--red); border-right: 2px solid var(--red); }
+
+    .corner::before, .corner::after {
+      content:    '';
+      position:   absolute;
+      background: var(--red-bright);
+      animation:  cornerPulse 2s ease-in-out infinite;
+    }
+
+    .corner-tl::before { top: -2px;    left: 8px;   width: 10px; height: 2px; }
+    .corner-tl::after  { top: 8px;     left: -2px;  width: 2px;  height: 10px; }
+    .corner-tr::before { top: -2px;    right: 8px;  width: 10px; height: 2px; }
+    .corner-tr::after  { top: 8px;     right: -2px; width: 2px;  height: 10px; }
+    .corner-bl::before { bottom: -2px; left: 8px;   width: 10px; height: 2px; }
+    .corner-bl::after  { bottom: 8px;  left: -2px;  width: 2px;  height: 10px; }
+    .corner-br::before { bottom: -2px; right: 8px;  width: 10px; height: 2px; }
+    .corner-br::after  { bottom: 8px;  right: -2px; width: 2px;  height: 10px; }
+
+    @keyframes cornerPulse {
+      0%, 100% { opacity: 1; }
+      50%      { opacity: 0.15; }
+    }
+
+    /* hero content */
+    .hero-content {
+      position:   relative;
+      z-index:    3;
+      max-width:  980px;
+    }
+
+    .hero-eyebrow {
+      display:        inline-flex;
+      align-items:    center;
+      gap:            12px;
+      border:         1px solid rgba(204,0,0,0.35);
+      padding:        6px 20px;
+      margin-bottom:  2rem;
+      font-size:      12px;
+      font-weight:    600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color:          var(--red-bright);
+      animation:      fadeUp .8s ease both;
+    }
+
+    .ebar {
+      width:      24px;
+      height:     1px;
+      background: var(--red);
+      animation:  ebarPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes ebarPulse {
+      0%, 100% { width: 24px; opacity: 1; }
+      50%      { width: 8px;  opacity: 0.3; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .h1-dragon {
+      display:        block;
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      clamp(3.5rem, 9vw, 7.5rem);
+      letter-spacing: 8px;
+      color:          var(--steel-light);
+      text-shadow:    0 0 40px rgba(196,205,214,0.2), 0 2px 0 rgba(0,0,0,0.9);
+      opacity:        0;
+      animation:      lineIn .8s ease .3s both;
+    }
+
+    .h1-forge {
+      display:        block;
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      clamp(3.5rem, 9vw, 7.5rem);
+      letter-spacing: 8px;
+      background:     linear-gradient(180deg, #FF2222 0%, #CC0000 50%, #880000 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter:         drop-shadow(0 0 20px rgba(200,0,0,0.6));
+      opacity:        0;
+      animation:      lineIn .8s ease .55s both, forgeFlicker 5s ease-in-out 1.4s infinite;
+    }
+
+    @keyframes lineIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes forgeFlicker {
+      0%, 88%, 100% { filter: drop-shadow(0 0 20px rgba(200,0,0,0.6)); }
+      90%           { filter: drop-shadow(0 0 50px rgba(255,50,0,1)); }
+      92%           { filter: drop-shadow(0 0 15px rgba(200,0,0,0.4)); }
+      94%           { filter: drop-shadow(0 0 45px rgba(255,30,0,.9)); }
+      96%           { filter: drop-shadow(0 0 18px rgba(200,0,0,0.5)); }
+    }
+
+    .h1-pcs-row {
+      display:         flex;
+      align-items:     center;
+      justify-content: center;
+      gap:             16px;
+      margin-top:      2px;
+      margin-bottom:   1.5rem;
+      opacity:         0;
+      animation:       lineIn .8s ease .8s both;
+    }
+
+    .h1-rule       { flex: 1; max-width: 70px; height: 1px; background: linear-gradient(90deg, transparent, var(--red)); }
+    .h1-rule.right { background: linear-gradient(90deg, var(--red), transparent); }
+
+    .h1-pcs {
+      font-family:    'Orbitron', monospace;
+      font-size:      clamp(.9rem, 2.5vw, 1.4rem);
+      font-weight:    900;
+      letter-spacing: 12px;
+      color:          var(--red-bright);
+      text-shadow:    0 0 20px rgba(255,26,26,0.7);
+    }
+
+    .hero-tagline {
+      font-size:      14px;
+      font-weight:    600;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color:          var(--muted);
+      margin-bottom:  2rem;
+      opacity:        0;
+      animation:      lineIn .8s ease 1s both;
+    }
+
+    .hero-tagline span { color: var(--red-bright); }
+
+    .hero-btns {
+      display:         flex;
+      gap:             1.25rem;
+      justify-content: center;
+      flex-wrap:       wrap;
+      opacity:         0;
+      animation:       lineIn .8s ease 1.2s both;
+    }
+
+    .btn-forge {
+      position:       relative;
+      padding:        14px 36px;
+      font-family:    'Orbitron', monospace;
+      font-size:      11px;
+      font-weight:    700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor:         pointer;
+      border:         none;
+      overflow:       hidden;
+      transition:     transform .2s, box-shadow .2s;
+    }
+
+    .btn-forge:hover { transform: translateY(-2px); }
+
+    .btn-forge.primary {
+      background: linear-gradient(135deg, var(--red-deep), var(--red), var(--red-bright));
+      color:      #fff;
+    }
+
+    .btn-forge.primary::after {
+      content:    '';
+      position:   absolute;
+      inset:      0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transform:  translateX(-100%);
+      transition: transform .5s;
+    }
+
+    .btn-forge.primary:hover::after     { transform: translateX(100%); }
+    .btn-forge.primary:hover            { box-shadow: 0 0 40px rgba(200,0,0,0.7), 0 0 80px rgba(180,0,0,0.25); }
+
+    .btn-forge.ghost {
+      background: transparent;
+      color:      var(--steel-light);
+      border:     1px solid rgba(196,205,214,0.3);
+    }
+
+    .btn-forge.ghost:hover {
+      border-color: var(--red);
+      color:        var(--red-bright);
+      box-shadow:   0 0 20px rgba(200,0,0,0.15);
+    }
+
+    .hero-icons {
+      display:         flex;
+      justify-content: center;
+      margin-top:      3rem;
+      opacity:         0;
+      animation:       lineIn .8s ease 1.5s both;
+      border-top:      1px solid rgba(204,0,0,0.12);
+      padding-top:     2rem;
+    }
+
+    .hi-item {
+      display:        flex;
+      flex-direction: column;
+      align-items:    center;
+      gap:            8px;
+      padding:        0 2rem;
+      border-right:   1px solid rgba(204,0,0,0.12);
+    }
+
+    .hi-item:last-child { border-right: none; }
+
+    .hi-icon {
+      font-size:  22px;
+      transition: transform .2s, filter .2s;
+    }
+
+    .hi-item:hover .hi-icon {
+      transform: scale(1.2);
+      filter:    drop-shadow(0 0 8px var(--red));
+    }
+
+    .hi-label {
+      font-size:      11px;
+      font-weight:    600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color:          var(--muted);
+    }
+
+    /* ─── TICKER ────────────────────────────────────────────────────── */
+    .ticker {
+      overflow:     hidden;
+      border-top:   1px solid rgba(204,0,0,0.12);
+      border-bottom: 1px solid rgba(204,0,0,0.12);
+      padding:      11px 0;
+      background:   var(--surface);
+      z-index:      2;
+      position:     relative;
+    }
+
+    .ticker-inner {
+      display:    flex;
+      white-space: nowrap;
+      animation:  tickerScroll 25s linear infinite;
+    }
+
+    .ticker-item {
+      font-family:    'Orbitron', monospace;
+      font-size:      10px;
+      letter-spacing: 2px;
+      color:          var(--muted);
+      padding:        0 2.5rem;
+      text-transform: uppercase;
+    }
+
+    .ticker-item .sep { color: var(--red); margin: 0 4px; }
+
+    @keyframes tickerScroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ─── SHARED SECTION STYLES ─────────────────────────────────────── */
+    section {
+      padding:  6rem 2rem;
+      position: relative;
+    }
+
+    .container {
+      max-width: 1140px;
+      margin:    0 auto;
+    }
+
+    .section-header {
+      text-align:     center;
+      margin-bottom:  3.5rem;
+    }
+
+    .sec-tag {
+      display:        flex;
+      align-items:    center;
+      gap:            10px;
+      font-size:      11px;
+      font-weight:    700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color:          var(--red);
+      margin-bottom:  .75rem;
+    }
+
+    .sec-tag::before {
+      content:    '';
+      width:      28px;
+      height:     1px;
+      background: var(--red);
+    }
+
+    .sec-tag.centered { justify-content: center; }
+
+    .sec-h {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      clamp(2rem, 4vw, 3.2rem);
+      letter-spacing: 3px;
+      margin-bottom:  .75rem;
+    }
+
+    .part-steel { color: var(--steel-light); }
+
+    .part-fire {
+      background:              linear-gradient(180deg, #FF2222, #AA0000);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip:         text;
+    }
+
+    .sec-p {
+      font-size:   17px;
+      font-weight: 500;
+      color:       var(--muted);
+      max-width:   520px;
+      margin:      0 auto;
+      line-height: 1.8;
+    }
+
+    /* animated divider */
+    .forge-div {
+      height:          2px;
+      background:      linear-gradient(90deg, transparent, var(--red-deep), var(--red), var(--red-bright), var(--red-deep), transparent);
+      background-size: 300% auto;
+      animation:       forgeDivAnim 4s linear infinite;
+    }
+
+    @keyframes forgeDivAnim {
+      from { background-position: 0 center; }
+      to   { background-position: 300% center; }
+    }
+
+    /* reveal on scroll */
+    .reveal {
+      opacity:    0;
+      transform:  translateY(40px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.visible {
+      opacity:   1;
+      transform: translateY(0);
+    }
+
+    /* ─── BUILDS ────────────────────────────────────────────────────── */
+    .builds-section { background: var(--surface); }
+
+    .builds-wrap {
+      padding:    2px;
+      background: linear-gradient(135deg, var(--red-deep), var(--red-bright), var(--red));
+    }
+
+    .builds-grid {
+      display:               grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap:                   2px;
+    }
+
+    .build-card {
+      background:  var(--bg2);
+      padding:     2.5rem 2rem;
+      position:    relative;
+      overflow:    hidden;
+      transition:  transform .3s, background .3s;
+    }
+
+    .build-card::before {
+      content:    '';
+      position:   absolute;
+      inset:      0;
+      background: radial-gradient(ellipse at top left, rgba(180,0,0,0.07), transparent 60%);
+      opacity:    0;
+      transition: opacity .3s;
+    }
+
+    .build-card:hover                { transform: translateY(-5px); background: var(--surface); }
+    .build-card:hover::before        { opacity: 1; }
+
+    .scan-line {
+      position:   absolute;
+      top:        0;
+      left:       -100%;
+      width:      100%;
+      height:     2px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+      animation:  scanLine 2.5s ease-in-out infinite;
+    }
+
+    .build-card.featured .scan-line {
+      background:         linear-gradient(90deg, transparent, var(--red-bright), transparent);
+      animation-duration: 2s;
+    }
+
+    @keyframes scanLine {
+      0%   { left: -100%; }
+      100% { left: 100%; }
+    }
+
+    .tier-badge {
+      display:        inline-block;
+      font-family:    'Orbitron', monospace;
+      font-size:      10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      padding:        4px 12px;
+      border:         1px solid rgba(204,0,0,0.25);
+      color:          var(--muted);
+      margin-bottom:  1rem;
+    }
+
+    .build-card.featured .tier-badge {
+      border-color: rgba(255,26,26,0.5);
+      color:        var(--red-bright);
+    }
+
+    .build-name {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      2.4rem;
+      letter-spacing: 4px;
+      margin-bottom:  .25rem;
+      color:          var(--steel-light);
+    }
+
+    .build-card.featured .build-name {
+      background:              linear-gradient(135deg, #FF3333, #CC0000);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip:         text;
+      filter:                  drop-shadow(0 0 12px rgba(200,0,0,0.5));
+    }
+
+    .build-tagline {
+      font-size:     16px;
+      font-weight:   500;
+      color:         var(--muted);
+      margin-bottom: 1.75rem;
+    }
+
+    .build-price {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      2.8rem;
+      letter-spacing: 2px;
+      color:          var(--red);
+      line-height:    1;
+    }
+
+    .build-card.featured .build-price {
+      background:              linear-gradient(135deg, var(--red-bright), var(--red));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip:         text;
+    }
+
+    .build-from {
+      font-size:      11px;
+      letter-spacing: 1px;
+      color:          var(--muted);
+      margin-bottom:  2rem;
+      text-transform: uppercase;
+    }
+
+    .spec-list {
+      list-style:    none;
+      margin-bottom: 2.5rem;
+    }
+
+    .spec-list li {
+      font-size:     16px;
+      font-weight:   500;
+      padding:       9px 0;
+      border-bottom: 1px solid rgba(204,0,0,0.07);
+      display:       flex;
+      justify-content: space-between;
+      color:         var(--muted);
+      transition:    color .2s;
+    }
+
+    .spec-list li:hover      { color: var(--text); }
+    .spec-list li:last-child { border-bottom: none; }
+
+    .sk {
+      display:     flex;
+      align-items: center;
+      gap:         8px;
+    }
+
+    .sk::before {
+      content:    '';
+      width:      5px;
+      height:     5px;
+      background: var(--red);
+      display:    block;
+      transform:  rotate(45deg);
+    }
+
+    .build-card.featured .sk::before { background: var(--red-bright); }
+
+    .sv { font-weight: 700; color: var(--text); }
+
+    .build-btn {
+      width:          100%;
+      padding:        13px;
+      font-family:    'Orbitron', monospace;
+      font-size:      10px;
+      font-weight:    700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor:         pointer;
+      position:       relative;
+      overflow:       hidden;
+      transition:     all .3s;
+      background:     transparent;
+      border:         1px solid rgba(204,0,0,0.35);
+      color:          var(--red);
+    }
+
+    .build-btn::before {
+      content:          '';
+      position:         absolute;
+      inset:            0;
+      background:       linear-gradient(90deg, var(--red-deep), var(--red));
+      transform:        scaleX(0);
+      transform-origin: left;
+      transition:       transform .3s;
+    }
+
+    .build-btn:hover::before { transform: scaleX(1); }
+    .build-btn:hover         { color: #fff; box-shadow: 0 0 30px rgba(200,0,0,0.35); }
+    .build-btn span          { position: relative; z-index: 1; }
+
+    .build-card.featured .build-btn {
+      border-color: rgba(255,26,26,0.45);
+      color:        var(--red-bright);
+    }
+
+    .build-card.featured .build-btn::before {
+      background: linear-gradient(90deg, var(--red), var(--red-bright));
+    }
+
+    /* ─── PC SHOWCASE ───────────────────────────────────────────────── */
+    .showcase-section { background: var(--bg2); }
+
+    .showcase-grid {
+      display:               grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap:                   1.5rem;
+    }
+
+    .showcase-card {
+      position:    relative;
+      overflow:    hidden;
+      border:      1px solid rgba(204,0,0,0.15);
+      background:  var(--surface);
+      transition:  border-color .3s, transform .3s;
+    }
+
+    .showcase-card:hover {
+      border-color: rgba(255,26,26,0.55);
+      transform:    translateY(-4px);
+    }
+
+    .showcase-img-wrap {
+      position:   relative;
+      width:      100%;
+      padding-top: 66%;
+      overflow:   hidden;
+      background: var(--surface2);
+    }
+
+    .showcase-img-wrap img {
+      position:   absolute;
+      inset:      0;
+      width:      100%;
+      height:     100%;
+      object-fit: cover;
+      transition: transform .5s, filter .5s;
+      filter:     brightness(0.85);
+    }
+
+    .showcase-card:hover .showcase-img-wrap img {
+      transform: scale(1.06);
+      filter:    brightness(1);
+    }
+
+    /* placeholder shown when no image is set */
+    .showcase-placeholder {
+      position:        absolute;
+      inset:           0;
+      display:         flex;
+      flex-direction:  column;
+      align-items:     center;
+      justify-content: center;
+      gap:             10px;
+      border:          2px dashed rgba(204,0,0,0.2);
+    }
+
+    .showcase-placeholder-icon { font-size: 2.5rem; opacity: 0.4; }
+
+    .showcase-placeholder-text {
+      font-family:    'Orbitron', monospace;
+      font-size:      9px;
+      letter-spacing: 2px;
+      color:          rgba(204,0,0,0.4);
+      text-transform: uppercase;
+    }
+
+    .showcase-info {
+      padding: 1.1rem 1.25rem;
+    }
+
+    .showcase-build-name {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      1.3rem;
+      letter-spacing: 3px;
+      color:          var(--steel-light);
+      margin-bottom:  .35rem;
+    }
+
+    .showcase-spec-badge {
+      display:        inline-block;
+      font-family:    'Orbitron', monospace;
+      font-size:      9px;
+      letter-spacing: 2px;
+      padding:        3px 10px;
+      border:         1px solid rgba(204,0,0,0.25);
+      color:          var(--red-bright);
+      text-transform: uppercase;
+    }
+
+    .showcase-bar {
+      position:   absolute;
+      bottom:     0;
+      left:       0;
+      width:      0;
+      height:     2px;
+      background: linear-gradient(90deg, var(--red-deep), var(--red-bright));
+      transition: width .4s ease;
+    }
+
+    .showcase-card:hover .showcase-bar { width: 100%; }
+
+    /* ─── SERVICES ──────────────────────────────────────────────────── */
+    .svc-grid {
+      display:               grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap:                   1.5rem;
+    }
+
+    .svc-card {
+      border:     1px solid rgba(204,0,0,0.1);
+      padding:    2rem 1.75rem;
+      position:   relative;
+      overflow:   hidden;
+      background: var(--surface);
+      transition: border-color .3s, background .3s;
+    }
+
+    .svc-card:hover {
+      border-color: rgba(204,0,0,0.45);
+      background:   var(--surface2);
+    }
+
+    .svc-icon {
+      width:       50px;
+      height:      50px;
+      border:      1px solid rgba(204,0,0,0.2);
+      display:     flex;
+      align-items: center;
+      justify-content: center;
+      font-size:   22px;
+      margin-bottom: 1.5rem;
+      transition:  border-color .3s, box-shadow .3s;
+    }
+
+    .svc-card:hover .svc-icon {
+      border-color: var(--red);
+      box-shadow:   0 0 18px rgba(200,0,0,0.3), inset 0 0 18px rgba(200,0,0,0.06);
+    }
+
+    /* corner pip decorations */
+    .svc-c { position: absolute; width: 8px; height: 8px; opacity: 0; transition: opacity .3s; }
+    .svc-c.tl { top: -1px;    left: -1px;  border-top:    2px solid var(--red); border-left:   2px solid var(--red); }
+    .svc-c.br { bottom: -1px; right: -1px; border-bottom: 2px solid var(--red); border-right:  2px solid var(--red); }
+    .svc-card:hover .svc-c { opacity: 1; }
+
+    .svc-card h3 {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      1.4rem;
+      letter-spacing: 2px;
+      margin-bottom:  .75rem;
+      color:          var(--steel-light);
+    }
+
+    .svc-card p {
+      font-size:   16px;
+      font-weight: 500;
+      color:       var(--muted);
+      line-height: 1.8;
+    }
+
+    .svc-bar {
+      position:   absolute;
+      bottom:     0;
+      left:       0;
+      width:      0;
+      height:     2px;
+      background: linear-gradient(90deg, var(--red-deep), var(--red-bright));
+      transition: width .4s ease;
+    }
+
+    .svc-card:hover .svc-bar { width: 100%; }
+
+    /* ─── WHY US ────────────────────────────────────────────────────── */
+    .why-section { background: var(--surface); }
+
+    .why-grid {
+      display:               grid;
+      grid-template-columns: 1fr 1fr;
+      gap:                   3rem;
+      align-items:           center;
+    }
+
+    .why-list {
+      display:        flex;
+      flex-direction: column;
+      gap:            1.25rem;
+    }
+
+    .why-item {
+      display:     flex;
+      gap:         1rem;
+      align-items: flex-start;
+      padding:     1.25rem;
+      border:      1px solid rgba(204,0,0,0.08);
+      transition:  border-color .3s, background .3s;
+    }
+
+    .why-item:hover {
+      border-color: rgba(204,0,0,0.3);
+      background:   rgba(180,0,0,0.04);
+    }
+
+    .why-n {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size:   2.5rem;
+      color:       rgba(204,0,0,0.15);
+      min-width:   50px;
+      line-height: 1;
+      transition:  color .3s;
+    }
+
+    .why-item:hover .why-n { color: var(--red); }
+
+    .why-text h4 {
+      font-family:    'Orbitron', monospace;
+      font-size:      12px;
+      font-weight:    700;
+      letter-spacing: 1px;
+      margin-bottom:  .5rem;
+      color:          var(--steel-light);
+    }
+
+    .why-text p {
+      font-size:   16px;
+      font-weight: 500;
+      color:       var(--muted);
+      line-height: 1.7;
+    }
+
+    /* spinning ring visual */
+    .why-visual {
+      display:         flex;
+      align-items:     center;
+      justify-content: center;
+    }
+
+    .forge-ring-wrap { position: relative; width: 260px; height: 260px; }
+
+    .fr {
+      position:      absolute;
+      inset:         0;
+      border-radius: 50%;
+      animation:     frspin 10s linear infinite;
+    }
+
+    .fr.r1 { border: 1px solid rgba(204,0,0,0.2); }
+    .fr.r2 { inset: 22px; border: 1px dashed rgba(255,26,26,0.2); animation-direction: reverse; animation-duration: 7s; }
+    .fr.r3 { inset: 44px; border: 1px solid rgba(150,0,0,0.2);   animation-duration: 5s; }
+
+    @keyframes frspin {
+      from { transform: rotate(0); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .fr-center {
+      position:        absolute;
+      inset:           62px;
+      background:      var(--surface2);
+      display:         flex;
+      flex-direction:  column;
+      align-items:     center;
+      justify-content: center;
+      border-radius:   50%;
+      border:          1px solid rgba(204,0,0,0.2);
+    }
+
+    .fr-num {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      3rem;
+      letter-spacing: 2px;
+      background:     linear-gradient(135deg, var(--red-bright), var(--red));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .fr-label {
+      font-size:      10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color:          var(--muted);
+    }
+
+    /* ─── CONTACT ───────────────────────────────────────────────────── */
+    .contact-layout {
+      display:               grid;
+      grid-template-columns: 1fr 2fr;
+      gap:                   3rem;
+      align-items:           start;
+    }
+
+    .contact-info {
+      display:        flex;
+      flex-direction: column;
+      gap:            1.25rem;
+    }
+
+    .cii {
+      padding:    1.5rem;
+      border:     1px solid rgba(204,0,0,0.1);
+      position:   relative;
+      overflow:   hidden;
+      transition: border-color .3s;
+    }
+
+    .cii:hover { border-color: rgba(204,0,0,0.4); }
+
+    .cii::before {
+      content:          '';
+      position:         absolute;
+      left:             0;
+      top:              0;
+      bottom:           0;
+      width:            2px;
+      background:       linear-gradient(180deg, var(--red), var(--red-deep));
+      transform:        scaleY(0);
+      transition:       transform .3s;
+      transform-origin: top;
+    }
+
+    .cii:hover::before { transform: scaleY(1); }
+
+    .cii-l {
+      font-size:      11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color:          var(--muted);
+      margin-bottom:  .4rem;
+    }
+
+    .cii-v {
+      font-size:   16px;
+      font-weight: 600;
+      color:       var(--text);
+    }
+
+    .contact-form {
+      border:     1px solid rgba(204,0,0,0.12);
+      padding:    2.5rem;
+      position:   relative;
+      background: var(--surface);
+    }
+
+    .contact-form::before {
+      content:    '';
+      position:   absolute;
+      top:        0;
+      left:       10%;
+      right:      10%;
+      height:     1px;
+      background: linear-gradient(90deg, transparent, var(--red), transparent);
+    }
+
+    .form-row {
+      display:               grid;
+      grid-template-columns: 1fr 1fr;
+      gap:                   1rem;
+      margin-bottom:         1rem;
+    }
+
+    .fg {
+      display:        flex;
+      flex-direction: column;
+      gap:            6px;
+      margin-bottom:  1rem;
+    }
+
+    .fg label {
+      font-size:      11px;
+      font-weight:    600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color:          var(--muted);
+    }
+
+    .fg input,
+    .fg select,
+    .fg textarea {
+      background:  var(--bg);
+      border:      1px solid rgba(204,0,0,0.12);
+      color:       var(--text);
+      padding:     11px 14px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size:   16px;
+      font-weight: 500;
+      outline:     none;
+      transition:  border-color .2s, box-shadow .2s;
+      width:       100%;
+    }
+
+    .fg input:focus,
+    .fg select:focus,
+    .fg textarea:focus {
+      border-color: var(--red);
+      box-shadow:   0 0 14px rgba(200,0,0,0.15);
+    }
+
+    .fg textarea { height: 100px; resize: vertical; }
+    .fg select   { appearance: none; }
+
+    .submit-btn {
+      width:          100%;
+      padding:        14px;
+      font-family:    'Orbitron', monospace;
+      font-size:      11px;
+      font-weight:    700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      cursor:         pointer;
+      border:         none;
+      background:     linear-gradient(90deg, var(--red-deep), var(--red), var(--red-bright));
+      color:          #fff;
+      position:       relative;
+      overflow:       hidden;
+      transition:     transform .2s;
+    }
+
+    .submit-btn::before {
+      content:    '';
+      position:   absolute;
+      inset:      0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+      transform:  translateX(-100%);
+      transition: transform .5s;
+    }
+
+    .submit-btn:hover::before { transform: translateX(100%); }
+    .submit-btn:hover         { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(200,0,0,0.45); }
+
+    /* ─── FOOTER ────────────────────────────────────────────────────── */
+    footer {
+      background:      var(--surface);
+      border-top:      1px solid rgba(204,0,0,0.1);
+      padding:         2.5rem;
+      display:         flex;
+      align-items:     center;
+      justify-content: space-between;
+      flex-wrap:       wrap;
+      gap:             1rem;
+    }
+
+    .footer-brand {
+      display:        flex;
+      flex-direction: column;
+      gap:            4px;
+    }
+
+    .footer-logo-row { display: flex; align-items: baseline; }
+
+    .fl-dragon {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      18px;
+      letter-spacing: 3px;
+      color:          var(--steel-light);
+    }
+
+    .fl-forge {
+      font-family:    'Bebas Neue', sans-serif;
+      font-size:      18px;
+      letter-spacing: 3px;
+      background:     linear-gradient(180deg, #FF2222, #AA0000);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .fl-pcs {
+      font-family:    'Orbitron', monospace;
+      font-size:      9px;
+      font-weight:    700;
+      letter-spacing: 4px;
+      color:          var(--red-bright);
+      margin-left:    6px;
+      align-self:     center;
+    }
+
+    .footer-tagline {
+      font-size:      11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color:          var(--muted);
+    }
+
+    footer p {
+      font-size:      12px;
+      color:          var(--muted);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOADER -->
+  <div id="loader">
+    <div class="ld-logo">
+      <span class="ld-dragon">Dragon</span>
+      <span class="ld-forge">Forge</span>
+      <span class="ld-pcs">PCs</span>
+    </div>
+    <div class="ld-bar"><div class="ld-fill"></div></div>
+    <div class="ld-text">Firing up the forge...</div>
+    <div class="ld-tagline">Built to Perform. Engineered to Excel.</div>
+  </div>
+
+  <!-- CURSOR -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- PARTICLES -->
+  <canvas id="particles"></canvas>
+
+  <!-- NAV -->
+  <nav id="navbar">
+    <div class="nav-logo">
+      <span class="nl-dragon">Dragon</span>
+      <span class="nl-forge">Forge</span>
+      <span class="nl-pcs">PCs</span>
+    </div>
+    <div class="nav-links">
+      <a href="#builds">Builds</a>
+      <a href="#showcase">Showcase</a>
+      <a href="#services">Services</a>
+      <a href="#why">Why Us</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
+      Get a Quote
+    </button>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg">
+      <div class="forge-texture"></div>
+      <div class="scale-grid"></div>
+      <div class="scanline"></div>
+      <div class="embers" id="embers"></div>
+    </div>
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <div class="ebar"></div>
+        Custom Gaming PC Specialists
+        <div class="ebar"></div>
+      </div>
+      <h1>
+        <span class="h1-dragon">Dragon</span>
+        <span class="h1-forge">Forge</span>
+        <div class="h1-pcs-row">
+          <div class="h1-rule"></div>
+          <span class="h1-pcs">PCs</span>
+          <div class="h1-rule right"></div>
+        </div>
+      </h1>
+      <div class="hero-tagline">
+        Built to Perform. <span>Engineered to Excel.</span>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-forge primary" onclick="document.getElementById('builds').scrollIntoView({behavior:'smooth'})">
+          Explore Builds
+        </button>
+        <button class="btn-forge ghost" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
+          Request Custom Build
+        </button>
+      </div>
+      <div class="hero-icons">
+        <div class="hi-item"><div class="hi-icon">🎮</div><div class="hi-label">Gaming Rigs</div></div>
+        <div class="hi-item"><div class="hi-icon">🖥</div><div class="hi-label">Workstations</div></div>
+        <div class="hi-item"><div class="hi-icon">⚡</div><div class="hi-label">Performance</div></div>
+        <div class="hi-item"><div class="hi-icon">🛡</div><div class="hi-label">Reliability</div></div>
+        <div class="hi-item"><div class="hi-icon">🎧</div><div class="hi-label">Support</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-inner">
+      <span class="ticker-item">DragonForge PCs<span class="sep">✦</span></span>
+      <span class="ticker-item">Built to Perform<span class="sep">✦</span></span>
+      <span class="ticker-item">Engineered to Excel<span class="sep">✦</span></span>
+      <span class="ticker-item">RTX 4090 In Stock<span class="sep">✦</span></span>
+      <span class="ticker-item">Free Cable Management<span class="sep">✦</span></span>
+      <span class="ticker-item">3-Year Warranty<span class="sep">✦</span></span>
+      <span class="ticker-item">Gaming Rigs &amp; Workstations<span class="sep">✦</span></span>
+      <span class="ticker-item">Kuala Lumpur Malaysia<span class="sep">✦</span></span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker-item">DragonForge PCs<span class="sep">✦</span></span>
+      <span class="ticker-item">Built to Perform<span class="sep">✦</span></span>
+      <span class="ticker-item">Engineered to Excel<span class="sep">✦</span></span>
+      <span class="ticker-item">RTX 4090 In Stock<span class="sep">✦</span></span>
+      <span class="ticker-item">Free Cable Management<span class="sep">✦</span></span>
+      <span class="ticker-item">3-Year Warranty<span class="sep">✦</span></span>
+      <span class="ticker-item">Gaming Rigs & Workstations<span class="sep">✦</span></span>
+      <span class="ticker-item">Kuala Lumpur Malaysia<span class="sep">✦</span></span>
+    </div>
+  </div>
+  <div class="forge-div"></div>
+
+  <!-- BUILDS -->
+  <section class="builds-section" id="builds">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="sec-tag centered">// Pre-configured Builds</div>
+        <div class="sec-h"><span class="part-steel">Choose Your </span><span class="part-fire">Armor</span></div>
+        <p class="sec-p">Ready-to-order builds for every level. All hand-assembled, cable-managed, and stress-tested before delivery.</p>
+      </div>
+      <div class="builds-wrap reveal">
+        <div class="builds-grid">
+
+          <!-- EMBER -->
+          <div class="build-card">
+            <div class="scan-line"></div>
+            <div class="tier-badge">// Tier 01 · Ember</div>
+            <div class="build-name">EMBER</div>
+            <div class="build-tagline">1080p Domination</div>
+            <div class="build-price">RM 3,299</div>
+            <div class="build-from">Starting price · fully customisable</div>
+            <ul class="spec-list">
+              <li><span class="sk">CPU</span><span class="sv">Ryzen 5 7600</span></li>
+              <li><span class="sk">GPU</span><span class="sv">RTX 4060</span></li>
+              <li><span class="sk">RAM</span><span class="sv">16GB DDR5 5200</span></li>
+              <li><span class="sk">Storage</span><span class="sv">1TB NVMe SSD</span></li>
+              <li><span class="sk">PSU</span><span class="sv">650W 80+ Gold</span></li>
+            </ul>
+            <button class="build-btn"><span>Configure This Build →</span></button>
+          </div>
+
+          <!-- INFERNO (featured) -->
+          <div class="build-card featured">
+            <div class="scan-line"></div>
+            <div class="tier-badge">// Most Popular</div>
+            <div class="build-name">INFERNO</div>
+            <div class="build-tagline">1440p / High Refresh Rate</div>
+            <div class="build-price">RM 5,799</div>
+            <div class="build-from">Starting price · fully customisable</div>
+            <ul class="spec-list">
+              <li><span class="sk">CPU</span><span class="sv">Ryzen 7 7700X</span></li>
+              <li><span class="sk">GPU</span><span class="sv">RTX 4070 Ti</span></li>
+              <li><span class="sk">RAM</span><span class="sv">32GB DDR5 6000</span></li>
+              <li><span class="sk">Storage</span><span class="sv">2TB NVMe Gen4</span></li>
+              <li><span class="sk">PSU</span><span class="sv">850W 80+ Gold</span></li>
+            </ul>
+            <button class="build-btn"><span>Configure This Build →</span></button>
+          </div>
+
+          <!-- HELLFIRE -->
+          <div class="build-card">
+            <div class="scan-line"></div>
+            <div class="tier-badge">// Tier 03 · Flagship</div>
+            <div class="build-name">HELLFIRE</div>
+            <div class="build-tagline">4K / No Compromises</div>
+            <div class="build-price">RM 9,499</div>
+            <div class="build-from">Starting price · fully customisable</div>
+            <ul class="spec-list">
+              <li><span class="sk">CPU</span><span class="sv">Core i9-14900K</span></li>
+              <li><span class="sk">GPU</span><span class="sv">RTX 4090</span></li>
+              <li><span class="sk">RAM</span><span class="sv">64GB DDR5 6400</span></li>
+              <li><span class="sk">Storage</span><span class="sv">4TB NVMe Gen4</span></li>
+              <li><span class="sk">PSU</span><span class="sv">1200W 80+ Platinum</span></li>
+            </ul>
+            <button class="build-btn"><span>Configure This Build →</span></button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+  <div class="forge-div"></div>
+
+  <!-- PC SHOWCASE -->
+  <!--
+    TO ADD YOUR OWN IMAGES:
+    Put your image files (e.g. pc-1.jpg) in the same folder as this HTML file.
+    Then replace each <div class="showcase-placeholder">...</div> block with:
+    <img src="pc-1.jpg" alt="Build description">
+  -->
+  <section class="showcase-section" id="showcase">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="sec-tag centered">// Our Work</div>
+        <div class="sec-h"><span class="part-steel">PC </span><span class="part-fire">Showcase</span></div>
+        <p class="sec-p">Every build that leaves our workshop — hand-assembled, stress-tested, and ready to dominate.</p>
+      </div>
+      <div class="showcase-grid reveal">
+
+        <div class="showcase-card">
+          <div class="showcase-img-wrap">
+            <img src="PC build 1.png" alt="Hellfire Build #001 — RTX 4090 · i9-14900K" />
+          </div>
+          <div class="showcase-info">
+            <div class="showcase-build-name">HELLFIRE BUILD #001</div>
+            <span class="showcase-spec-badge">RTX 4090 · i9-14900K</span>
+          </div>
+          <div class="showcase-bar"></div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-img-wrap">
+            <div class="showcase-placeholder">
+              <div class="showcase-placeholder-icon">🖥️</div>
+              <div class="showcase-placeholder-text">Replace with pc-2.jpg</div>
+            </div>
+          </div>
+          <div class="showcase-info">
+            <div class="showcase-build-name">INFERNO BUILD #002</div>
+            <span class="showcase-spec-badge">RTX 4070 Ti · R7 7700X</span>
+          </div>
+          <div class="showcase-bar"></div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-img-wrap">
+            <div class="showcase-placeholder">
+              <div class="showcase-placeholder-icon">🖥️</div>
+              <div class="showcase-placeholder-text">Replace with pc-3.jpg</div>
+            </div>
+          </div>
+          <div class="showcase-info">
+            <div class="showcase-build-name">EMBER BUILD #003</div>
+            <span class="showcase-spec-badge">RTX 4060 · R5 7600</span>
+          </div>
+          <div class="showcase-bar"></div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-img-wrap">
+            <div class="showcase-placeholder">
+              <div class="showcase-placeholder-icon">🖥️</div>
+              <div class="showcase-placeholder-text">Replace with pc-4.jpg</div>
+            </div>
+          </div>
+          <div class="showcase-info">
+            <div class="showcase-build-name">CUSTOM BUILD #004</div>
+            <span class="showcase-spec-badge">Workstation · RTX 4080</span>
+          </div>
+          <div class="showcase-bar"></div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-img-wrap">
+            <div class="showcase-placeholder">
+              <div class="showcase-placeholder-icon">🖥️</div>
+              <div class="showcase-placeholder-text">Replace with pc-5.jpg</div>
+            </div>
+          </div>
+          <div class="showcase-info">
+            <div class="showcase-build-name">HELLFIRE BUILD #005</div>
+            <span class="showcase-spec-badge">RTX 4090 · White Build</span>
+          </div>
+          <div class="showcase-bar"></div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-img-wrap">
+            <div class="showcase-placeholder">
+              <div class="showcase-placeholder-icon">🖥️</div>
+              <div class="showcase-placeholder-text">Replace with pc-6.jpg</div>
+            </div>
+          </div>
+          <div class="showcase-info">
+            <div class="showcase-build-name">INFERNO BUILD #006</div>
+            <span class="showcase-spec-badge">RTX 4070 Ti · Full Red</span>
+          </div>
+          <div class="showcase-bar"></div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-img-wrap">
+            <div class="showcase-placeholder">
+              <div class="showcase-placeholder-icon">🖥️</div>
+              <div class="showcase-placeholder-text">Replace with pc-7.jpg</div>
+            </div>
+          </div>
+          <div class="showcase-info">
+            <div class="showcase-build-name">CUSTOM BUILD #007</div>
+            <span class="showcase-spec-badge">Dual GPU · Creator Rig</span>
+          </div>
+          <div class="showcase-bar"></div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-img-wrap">
+            <div class="showcase-placeholder">
+              <div class="showcase-placeholder-icon">🖥️</div>
+              <div class="showcase-placeholder-text">Replace with pc-8.jpg</div>
+            </div>
+          </div>
+          <div class="showcase-info">
+            <div class="showcase-build-name">EMBER BUILD #008</div>
+            <span class="showcase-spec-badge">Budget King · 1080p</span>
+          </div>
+          <div class="showcase-bar"></div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-img-wrap">
+            <div class="showcase-placeholder">
+              <div class="showcase-placeholder-icon">🖥️</div>
+              <div class="showcase-placeholder-text">Replace with pc-9.jpg</div>
+            </div>
+          </div>
+          <div class="showcase-info">
+            <div class="showcase-build-name">HELLFIRE BUILD #009</div>
+            <span class="showcase-spec-badge">RTX 4090 · ARGB Beast</span>
+          </div>
+          <div class="showcase-bar"></div>
+        </div>
+
+        <div class="showcase-card">
+          <div class="showcase-img-wrap">
+            <div class="showcase-placeholder">
+              <div class="showcase-placeholder-icon">🖥️</div>
+              <div class="showcase-placeholder-text">Replace with pc-10.jpg</div>
+            </div>
+          </div>
+          <div class="showcase-info">
+            <div class="showcase-build-name">CUSTOM BUILD #010</div>
+            <span class="showcase-spec-badge">Silent · All-Black</span>
+          </div>
+          <div class="showcase-bar"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <div class="forge-div"></div>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="sec-tag centered">// What We Offer</div>
+        <div class="sec-h"><span class="part-steel">Our </span><span class="part-fire">Services</span></div>
+        <p class="sec-p">From custom builds to repairs — we've got your rig covered end-to-end.</p>
+      </div>
+      <div class="svc-grid reveal">
+
+        <div class="svc-card">
+          <div class="svc-c tl"></div>
+          <div class="svc-c br"></div>
+          <div class="svc-icon">🎮</div>
+          <h3>Gaming Rigs</h3>
+          <p>Handcrafted systems built to destroy the competition. Every part chosen for maximum FPS and stunning aesthetics.</p>
+          <div class="svc-bar"></div>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-c tl"></div>
+          <div class="svc-c br"></div>
+          <div class="svc-icon">🖥</div>
+          <h3>Workstations</h3>
+          <p>High-powered builds for creators, engineers, and professionals. 3D rendering, video editing, AI workflows — handled.</p>
+          <div class="svc-bar"></div>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-c tl"></div>
+          <div class="svc-c br"></div>
+          <div class="svc-icon">🔧</div>
+          <h3>Upgrades &amp; Repair</h3>
+          <p>GPU swaps, RAM upgrades, diagnostics, and fixes. Transparent pricing, fast turnaround, no guesswork.</p>
+          <div class="svc-bar"></div>
+        </div>
+
+        <div class="svc-card">
+          <div class="svc-c tl"></div>
+          <div class="svc-c br"></div>
+          <div class="svc-icon">⚙</div>
+          <h3>Cable Management</h3>
+          <p>Pro-level routing and sleeving for a clean, airflow-optimised interior that looks as fierce as it performs.</p>
+          <div class="svc-bar"></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <div class="forge-div"></div>
+
+  <!-- WHY US -->
+  <section class="why-section" id="why">
+    <div class="container">
+      <div class="why-grid">
+
+        <div class="reveal">
+          <div class="sec-tag">// Why Choose Us</div>
+          <div class="sec-h" style="margin-bottom: 2.5rem">
+            <span class="part-steel">The DragonForge </span><span class="part-fire">Difference</span>
+          </div>
+          <div class="why-list">
+            <div class="why-item">
+              <div class="why-n">01</div>
+              <div class="why-text">
+                <h4>Hand-Picked Components</h4>
+                <p>Only tier-1 parts — no cheap OEM substitutes. Every component personally vetted for performance and longevity.</p>
+              </div>
+            </div>
+            <div class="why-item">
+              <div class="why-n">02</div>
+              <div class="why-text">
+                <h4>72-Hour Stress Test</h4>
+                <p>Every build runs a full stability and thermals test before it ships. If it breaks in our hands, we fix it — not yours.</p>
+              </div>
+            </div>
+            <div class="why-item">
+              <div class="why-n">03</div>
+              <div class="why-text">
+                <h4>3-Year Build Warranty</h4>
+                <p>Full coverage on labour and workmanship. Component warranties passed directly to you on top of that.</p>
+              </div>
+            </div>
+            <div class="why-item">
+              <div class="why-n">04</div>
+              <div class="why-text">
+                <h4>Lifetime Tech Support</h4>
+                <p>Got a question 2 years later? We're still here. WhatsApp, call, or drop by — we look after our customers long-term.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="why-visual reveal">
+          <div class="forge-ring-wrap">
+            <div class="fr r1"></div>
+            <div class="fr r2"></div>
+            <div class="fr r3"></div>
+            <div class="fr-center">
+              <div class="fr-num" id="countNum">0+</div>
+              <div class="fr-label">Builds</div>
+              <div class="fr-label">Delivered</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+  <div class="forge-div"></div>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="sec-tag centered">// Get in Touch</div>
+        <div class="sec-h"><span class="part-steel">Request a </span><span class="part-fire">Quote</span></div>
+        <p class="sec-p">Tell us what you need — we'll get back within 24 hours with a personalised build proposal.</p>
+      </div>
+      <div class="contact-layout reveal">
+
+        <div class="contact-info">
+          <div class="cii">
+            <div class="cii-l">Location</div>
+            <div class="cii-v">Kuala Lumpur, Malaysia</div>
+          </div>
+          <div class="cii">
+            <div class="cii-l">Email</div>
+            <div class="cii-v">hello@dragonforgepc.my</div>
+          </div>
+          <div class="cii">
+            <div class="cii-l">WhatsApp</div>
+            <div class="cii-v">+60 12-345 6789</div>
+          </div>
+          <div class="cii">
+            <div class="cii-l">Response Time</div>
+            <div class="cii-v">Within 24 Hours</div>
+          </div>
+          <div class="cii">
+            <div class="cii-l">Tagline</div>
+            <div class="cii-v" style="font-size: 14px; color: var(--red-bright); letter-spacing: 1px">
+              Built to Perform. Engineered to Excel.
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form">
+          <div class="form-row">
+            <div class="fg">
+              <label>Your Name</label>
+              <input type="text" placeholder="Ahmad Rasyid" />
+            </div>
+            <div class="fg">
+              <label>Email</label>
+              <input type="email" placeholder="you@email.com" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="fg">
+              <label>Phone / WhatsApp</label>
+              <input type="text" placeholder="+60 12-345 6789" />
+            </div>
+            <div class="fg">
+              <label>Budget</label>
+              <select>
+                <option>Under RM 3,000</option>
+                <option>RM 3,000 – RM 5,000</option>
+                <option>RM 5,000 – RM 8,000</option>
+                <option>RM 8,000 – RM 12,000</option>
+                <option>RM 12,000+</option>
+              </select>
+            </div>
+          </div>
+          <div class="fg">
+            <label>Interested In</label>
+            <select>
+              <option>Custom Gaming Rig</option>
+              <option>Workstation Build</option>
+              <option>Pre-configured Build</option>
+              <option>PC Upgrade</option>
+              <option>Repair / Diagnostics</option>
+              <option>Cable Management</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label>Tell Us More</label>
+            <textarea placeholder="What games do you play? Any components in mind? The more detail, the better..."></textarea>
+          </div>
+          <button class="submit-btn">Send My Request →</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-brand">
+      <div class="footer-logo-row">
+        <span class="fl-dragon">Dragon</span>
+        <span class="fl-forge">Forge</span>
+        <span class="fl-pcs">PCs</span>
+      </div>
+      <div class="footer-tagline">Built to Perform. Engineered to Excel.</div>
+    </div>
+    <p>Kuala Lumpur, Malaysia &nbsp;·&nbsp; hello@dragonforgepc.my</p>
+    <p>© 2026 DragonForge PCs. All rights reserved.</p>
+  </footer>
+
+  <script>
+    // ── LOADER ──────────────────────────────────────────────────────────
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+      }, 2200);
+    });
+
+    // ── CUSTOM CURSOR ────────────────────────────────────────────────────
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX;
+      my = e.clientY;
+      cursor.style.left = mx + 'px';
+      cursor.style.top  = my + 'px';
+    });
+
+    (function loop() {
+      rx += (mx - rx) * 0.12;
+      ry += (my - ry) * 0.12;
+      ring.style.left = Math.round(rx) + 'px';
+      ring.style.top  = Math.round(ry) + 'px';
+      requestAnimationFrame(loop);
+    })();
+
+    document.querySelectorAll('button, a, .build-card, .svc-card, .why-item, .cii, .showcase-card')
+      .forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          cursor.style.width  = '18px';
+          cursor.style.height = '18px';
+          ring.style.width    = '50px';
+          ring.style.height   = '50px';
+        });
+        el.addEventListener('mouseleave', () => {
+          cursor.style.width  = '10px';
+          cursor.style.height = '10px';
+          ring.style.width    = '34px';
+          ring.style.height   = '34px';
+        });
+      });
+
+    // ── STICKY NAV ───────────────────────────────────────────────────────
+    const nav = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ── PARTICLE CANVAS ──────────────────────────────────────────────────
+    const cv = document.getElementById('particles');
+    const ct = cv.getContext('2d');
+
+    function resizeCanvas() {
+      cv.width  = window.innerWidth;
+      cv.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    const palettes = ['rgba(204,0,0,', 'rgba(255,26,26,', 'rgba(150,0,0,'];
+    const pts = Array.from({ length: 70 }, () => ({
+      x:   Math.random() * cv.width,
+      y:   Math.random() * cv.height,
+      vx:  (Math.random() - .5) * .35,
+      vy:  (Math.random() - .5) * .35,
+      r:   Math.random() * 1.4 + .4,
+      col: palettes[Math.floor(Math.random() * palettes.length)],
+    }));
+
+    function drawPts() {
+      ct.clearRect(0, 0, cv.width, cv.height);
+
+      pts.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0)        p.x = cv.width;
+        if (p.x > cv.width) p.x = 0;
+        if (p.y < 0)        p.y = cv.height;
+        if (p.y > cv.height) p.y = 0;
+
+        ct.beginPath();
+        ct.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ct.fillStyle = p.col + '0.7)';
+        ct.fill();
+      });
+
+      pts.forEach((a, i) => {
+        pts.slice(i + 1).forEach(b => {
+          const d = Math.hypot(a.x - b.x, a.y - b.y);
+          if (d < 90) {
+            ct.beginPath();
+            ct.moveTo(a.x, a.y);
+            ct.lineTo(b.x, b.y);
+            ct.strokeStyle = 'rgba(180,0,0,' + (0.07 * (1 - d / 90)) + ')';
+            ct.lineWidth   = .5;
+            ct.stroke();
+          }
+        });
+      });
+
+      requestAnimationFrame(drawPts);
+    }
+    drawPts();
+
+    // ── EMBERS ───────────────────────────────────────────────────────────
+    const eb = document.getElementById('embers');
+    for (let i = 0; i < 20; i++) {
+      const e = document.createElement('div');
+      e.className = 'ember';
+      e.style.cssText = [
+        'left:'               + (Math.random() * 100) + '%',
+        'animation-duration:' + (4 + Math.random() * 7) + 's',
+        'animation-delay:'    + (Math.random() * 7) + 's',
+        '--drift:'            + ((Math.random() - .5) * 80) + 'px',
+        'width:'              + (Math.random() * 2 + 1) + 'px',
+        'height:'             + (Math.random() * 2 + 1) + 'px',
+      ].join(';');
+      eb.appendChild(e);
+    }
+
+    // ── SCROLL REVEAL ────────────────────────────────────────────────────
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: .1 });
+
+    document.querySelectorAll('.reveal').forEach(r => revealObs.observe(r));
+
+    // ── COUNTER ANIMATION ────────────────────────────────────────────────
+    const countEl = document.getElementById('countNum');
+    const countObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          let s = 0;
+          const timer = setInterval(() => {
+            s += 4;
+            if (s >= 500) {
+              countEl.textContent = '500+';
+              clearInterval(timer);
+            } else {
+              countEl.textContent = s + '+';
+            }
+          }, 16);
+          countObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: .5 });
+
+    countObs.observe(countEl);
+  </script>
+
+</body>
+</html>
