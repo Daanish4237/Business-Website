@@ -1487,6 +1487,111 @@
       color:          var(--muted);
       letter-spacing: 1px;
     }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────────────── */
+
+    /* Tablet — up to 900px */
+    @media (max-width: 900px) {
+      .why-grid        { grid-template-columns: 1fr; }
+      .why-visual      { display: none; }
+      .contact-layout  { grid-template-columns: 1fr; }
+      .nav-links       { display: none; }
+    }
+
+    /* Mobile — up to 640px */
+    @media (max-width: 640px) {
+
+      /* nav */
+      nav               { padding: 0 1.25rem; }
+      .nav-cta          { font-size: 9px; padding: 7px 14px; }
+
+      /* hero */
+      .hero             { padding: 5rem 1.25rem 3rem; }
+      .hero-icons       { flex-wrap: wrap; gap: 1rem; padding-top: 1.5rem; }
+      .hi-item          { padding: 0 1rem; border-right: none; }
+
+      /* sections */
+      section           { padding: 4rem 1.25rem; }
+
+      /* builds */
+      .builds-grid      { grid-template-columns: 1fr; }
+
+      /* showcase */
+      .showcase-grid    { grid-template-columns: 1fr; }
+
+      /* services */
+      .svc-grid         { grid-template-columns: 1fr; }
+
+      /* why */
+      .why-grid         { grid-template-columns: 1fr; }
+      .why-visual       { display: none; }
+
+      /* contact */
+      .contact-layout   { grid-template-columns: 1fr; }
+      .form-row         { grid-template-columns: 1fr; }
+      .contact-form     { padding: 1.5rem 1rem; }
+
+      /* footer */
+      footer {
+        flex-direction: column;
+        align-items:    flex-start;
+        padding:        1.5rem 1.25rem;
+      }
+
+      /* lightbox controls */
+      #lightbox-controls { bottom: .75rem; }
+      .lb-btn            { width: 34px; height: 34px; }
+    }
+
+    /* Hamburger menu (mobile nav) */
+    #nav-toggle {
+      display:    none;
+      background: none;
+      border:     1px solid rgba(204,0,0,0.4);
+      color:      var(--red-bright);
+      width:      38px;
+      height:     38px;
+      font-size:  18px;
+      cursor:     pointer;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #mobile-nav {
+      display:          none;
+      position:         fixed;
+      top:              68px;
+      left:             0;
+      right:            0;
+      background:       rgba(6,4,4,0.98);
+      backdrop-filter:  blur(16px);
+      border-bottom:    1px solid rgba(204,0,0,0.15);
+      flex-direction:   column;
+      padding:          1.5rem 2rem;
+      gap:              1.25rem;
+      z-index:          499;
+    }
+
+    #mobile-nav.open { display: flex; }
+
+    #mobile-nav a {
+      color:          var(--muted);
+      text-decoration: none;
+      font-size:      14px;
+      font-weight:    600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition:     color .2s;
+      padding:        .5rem 0;
+      border-bottom:  1px solid rgba(204,0,0,0.08);
+    }
+
+    #mobile-nav a:last-child { border-bottom: none; }
+    #mobile-nav a:hover      { color: var(--red-bright); }
+
+    @media (max-width: 900px) {
+      #nav-toggle { display: flex; }
+    }
   </style>
 </head>
 
@@ -1528,7 +1633,17 @@
     <button class="nav-cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">
       Get a Quote
     </button>
+    <button id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
   </nav>
+
+  <!-- MOBILE NAV -->
+  <div id="mobile-nav" role="navigation">
+    <a href="#builds"   onclick="closeMobileNav()">Builds</a>
+    <a href="#showcase" onclick="closeMobileNav()">Showcase</a>
+    <a href="#services" onclick="closeMobileNav()">Services</a>
+    <a href="#why"      onclick="closeMobileNav()">Why Us</a>
+    <a href="#contact"  onclick="closeMobileNav()">Contact</a>
+  </div>
 
   <!-- HERO -->
   <section class="hero">
@@ -2195,6 +2310,24 @@
     }, { threshold: .5 });
 
     countObs.observe(countEl);
+  </script>
+
+  <script>
+    /* ─── MOBILE NAV ─────────────────────────────────────────────────── */
+    const navToggle  = document.getElementById('nav-toggle');
+    const mobileNav  = document.getElementById('mobile-nav');
+
+    navToggle.addEventListener('click', () => {
+      const isOpen = mobileNav.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', isOpen);
+      navToggle.textContent = isOpen ? '✕' : '☰';
+    });
+
+    function closeMobileNav() {
+      mobileNav.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+      navToggle.textContent = '☰';
+    }
   </script>
 
   <script>
